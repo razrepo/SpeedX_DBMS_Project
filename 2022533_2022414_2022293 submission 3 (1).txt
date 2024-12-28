@@ -1,0 +1,223 @@
+﻿Database schema and indexes creation with integrity constraints and data insertion
+
+
+
+1. Create table commands
+
+
+* CREATE TABLE customer (customer_ID INT PRIMARY KEY, customer_name VARCHAR(255) NOT NULL, customer_password VARCHAR(255) NOT NULL, contact_number VARCHAR(10) UNIQUE, customer_address VARCHAR(60), customer_email_id VARCHAR(255) UNIQUE, customer_pincode VARCHAR(6), CHECK (LENGTH(customer_pincode) = 6));
+
+
+* CREATE TABLE product (product_ID INT PRIMARY KEY, product_name VARCHAR(255), category_ID INT, product_desc VARCHAR(255), product_price INT, product_stock INT, FOREIGN KEY (category_ID) REFERENCES category(category_ID), CHECK (product_price >= 0), CHECK (product_stock >= 0));
+
+
+* CREATE TABLE category (category_ID INT PRIMARY KEY, category_name VARCHAR(255) UNIQUE NOT NULL);
+ 
+* CREATE TABLE rating (rating_ID INT PRIMARY KEY, customer_ID INT, product_ID INT, rating INT CHECK (rating >= 0 AND rating <= 5), review VARCHAR(255), date DATE, FOREIGN KEY (customer_ID) REFERENCES customer(customer_ID), FOREIGN KEY (product_ID) REFERENCES product(product_ID));
+
+
+* CREATE TABLE Store (store_ID INT PRIMARY KEY, pincode VARCHAR(6) NOT NULL, UNIQUE(pincode), CHECK (LENGTH(pincode) = 6));
+
+
+* CREATE TABLE Delivery_partner (partner_ID INT PRIMARY KEY, partner_name VARCHAR(255) NOT NULL, store_ID INT, FOREIGN KEY (store_ID) REFERENCES Store(store_ID));
+
+
+* CREATE TABLE Order_items (order_ID INT, product_ID INT, quantity INT, FOREIGN KEY (order_ID) REFERENCES Order_(order_ID), FOREIGN KEY (product_ID) REFERENCES product(product_ID), CHECK (quantity > 0));
+
+
+* CREATE TABLE Cart (customer_ID INT, product_ID INT, quantity INT, cost INT, FOREIGN KEY (customer_ID) REFERENCES customer(customer_ID), FOREIGN KEY (product_ID) REFERENCES product(product_ID), CHECK (quantity > 0), CHECK (cost > 0));
+
+
+* CREATE TABLE discount (discount_ID INT PRIMARY KEY, category_ID INT, discount_name VARCHAR(255) NOT NULL, discount_percent VARCHAR(2) NOT NULL, discount_code VARCHAR(10) UNIQUE, start_date DATE, end_date DATE, FOREIGN KEY (category_ID) REFERENCES category(category_ID), CHECK (CAST(discount_percent AS DECIMAL) BETWEEN 0 AND 100));
+
+
+* CREATE TABLE order_ (order_ID INT PRIMARY KEY, customer_ID INT, order_status VARCHAR(45) NOT NULL, partner_ID INT, FOREIGN KEY (customer_ID) REFERENCES customer(customer_ID), FOREIGN KEY (partner_ID) REFERENCES Delivery_partner(partner_ID));
+
+
+
+
+2. Data Insertion (Insert commands)
+
+
+2.1 Customer Table
+
+
+INSERT INTO customer (customer_ID, customer_name, customer_password, contact_number, customer_address, customer_email_id, customer_pincode)
+VALUES
+(1, 'Tanishk Singh', 'password123', '9876543210', '123 Main St', 'tanishk@example.com', '110001'),
+(2, 'Mayank Khan', 'pass123', '9988776655', '456 Oak St', 'mayank@example.com', '110021'),
+(3, 'Rajesh Sharma', 'securepwd', '9876543211', '789 Elm St', 'rajesh@example.com', '110051'),
+(4, 'Vikram Verma', 'strongpass', '9876543212', '321 Pine St', 'vikram@example.com', '110071'),
+(5, 'Neha Gupta', 'letmein', '9876543213', '654 Cedar St', 'neha@example.com', '110091'),
+(6, 'Rahul Kumar', 'mypass', '9876543214', '987 Birch St', 'rahul@example.com', '110011'),
+(7, 'Priya Patel', 'password', '9876543215', '147 Maple St', 'priya@example.com', '110061'),
+(8, 'Bittu Chaturvedi', 'jamestpwd', '9876543216', '963 Walnut St', 'bittu@example.com', '110041'),
+(9, 'Shreya Tiwari', 'olivia123', '9876543217', '741 Cherry St', 'shreya@example.com', '110081'),
+(10, 'XYZ Yadav', 'willpass', '9876543218', '852 Pineapple St', 'xyz@example.com', '110031');
+
+
+
+2.2 Product Table
+
+
+INSERT INTO product (product_ID, product_name, category_ID, product_desc, product_price, product_stock) VALUES
+(1, 'Lays Potato Chips', 1, 'Classic Salted Chips 100g', 20, 25),
+(2, 'Cadbury Dairy Milk', 2, 'Chocolate Bar 50g', 25, 30),
+(3, 'Frooti Mango Drink', 3, 'Mango Drink 200ml', 15, 20),
+(4, 'Maggi Instant Noodles', 4, 'Masala Noodles 70g', 12, 35),
+(5, 'Nivea Face Wash', 5, 'Refreshing Face Wash 100ml', 80, 15),
+(6, 'Logitech Wireless Mouse', 6, 'Wireless Mouse with USB Receiver', 500, 20),
+(7, 'Levi\'s Men\'s Jeans', 7, 'Slim Fit Jeans 32 Waist', 1500, 5),
+(8, 'Harry Potter and the Philosopher\'s Stone', 8, 'Novel by J.K. Rowling', 300, 8),
+(9, 'Prestige Pressure Cooker', 9, 'Aluminum Pressure Cooker 5L', 1000, 12),
+(10, 'Adidas Football', 10, 'Size 5 Football', 800, 18);
+
+
+
+2.3 Category Table
+
+
+     INSERT INTO category (category_ID, category_name) 
+VALUES 
+(1, 'Chips & Namkeen'),
+(2, 'Sweets and Chocolates'),
+(3, 'Drinks and Juices'),
+(4, 'Instant Food'),
+(5, 'Skin and Face'),
+(6, 'Electronics'),
+(7, 'Apparel'),
+(8, 'Books and Stationery'),
+(9, 'Home and Kitchen'),
+(10, 'Sports and Fitness');
+
+
+
+2.4 Rating Table
+
+
+INSERT INTO rating (rating_ID, customer_ID, product_ID, rating, review, date) 
+VALUES
+(1, 1, 1, 4, 'Really enjoyed these chips, great for snacking while watching movies.', '2024-02-10'),
+(2, 2, 2, 5, 'Delicious chocolate, melts in your mouth! Definitely buying again.', '2024-02-11'),
+(3, 3, 3, 3, 'Decent mango drink, but a bit too sweet for my taste.', '2024-02-12'),
+(4, 4, 4, 4, 'Good noodles, quick and easy meal option.', '2024-02-13'),
+(5, 5, 5, 5, 'Love this face wash, leaves my skin feeling fresh and clean.', '2024-02-14'),
+(6, 6, 6, 4, 'The wireless mouse works perfectly, no complaints so far.', '2024-02-15'),
+(7, 7, 7, 5, 'Great pair of jeans, fits perfectly and looks stylish.', '2024-02-16'),
+(8, 8, 8, 4, 'Classic book, a must-read for any Harry Potter fan.', '2024-02-17'),
+(9, 9, 9, 3, 'Decent pressure cooker, but the handle feels a bit flimsy.', '2024-02-18'),
+(10, 10, 10, 5, 'Excellent quality football, durable and great for matches.', '2024-02-19');
+
+
+
+2.5 order table
+
+
+INSERT INTO order_ (order_ID, customer_ID, order_status, partner_ID)
+VALUES 
+(1, 1, 'delivered', 1),
+(2, 2, 'delivered', 2),
+(3, 3, 'delivered', 3),
+(4, 3, 'delivered', 3),
+(5, 3, 'delivered', 3),
+(6, 4, 'delivered', 4),
+(7, 6, 'delivered', 6),
+(8, 7, 'delivered', 7),
+(9, 8, 'delivered', 8),
+(10, 10, 'delivered', 10);
+
+
+
+2.6 Discount Table
+
+
+INSERT INTO discount (discount_ID, category_ID, discount_name, discount_percent, discount_code, start_date, end_date) VALUES
+(1, 1, 'Chips & Namkeen Discount', '10', 'CHIPS10', '2024-02-01', '2024-04-01'),
+(2, 2, 'Sweets and Chocolates Discount', '15', 'SWEET15', '2024-02-02', '2024-04-02'),
+(3, 3, 'Drinks and Juices Discount', '12', 'DRINK12', '2024-02-03', '2024-04-03'),
+(4, 4, 'Instant Food Discount', '8', 'INSTANT8', '2024-02-04', '2024-04-04'),
+(5, 5, 'Skin and Face Discount', '20', 'SKIN20', '2024-02-05', '2024-04-05'),
+(6, 6, 'Electronics Discount', '18', 'ELECTRO18', '2024-02-06', '2024-04-06'),
+(7, 7, 'Apparel Discount', '25', 'APPAREL25', '2024-02-07', '2024-04-07'),
+(8, 8, 'Books and Stationery Discount', '30', 'BOOK30', '2024-02-08', '2024-04-08'),
+(9, 9, 'Home and Kitchen Discount', '22', 'HOME22', '2024-02-09', '2024-04-09'),
+(10, 10, 'Sports and Fitness Discount', '16', 'SPORT16', '2024-02-10', '2024-04-10');
+
+
+
+2.7 cart table
+
+
+INSERT INTO Cart (customer_ID, product_ID, quantity, cost) 
+VALUES
+(1, 1, 2, 40),
+(2, 2, 1, 25),
+(3, 3, 3, 45),
+(3, 4, 2, 24),
+(3, 5, 1, 80),
+(4, 6, 1, 500),
+(5, 7, 1, 1500),
+(6, 8, 1, 300),
+(7, 9, 2, 2000),
+(8, 10, 2, 1600);
+
+
+
+2.8 Store Table
+
+
+INSERT INTO Store (store_ID, pincode) 
+VALUES 
+(1, '110002'), 
+(2, '110025'), 
+(3, '110050'), 
+(4, '110072'), 
+(5, '110090'), 
+(6, '110010'), 
+(7, '110062'), 
+(8, '110040'), 
+(9, '110080'), 
+(10, '110030');
+
+
+
+2.9 Delivery Partner Table
+
+
+INSERT INTO Delivery_partner (partner_ID, partner_name, store_ID) 
+VALUES 
+(1, 'Rajesh Sharma', 1),
+(2, 'Vikram Verma', 2),
+(3, 'Anjali Kapoor', 3),
+(4, 'Kirti Patel', 4),
+(5, 'Amit Kumar', 5),
+(6, 'Deepak Singh', 6),
+(7, 'Neha Gupta', 7),
+(8, 'Rahul Mishra', 8),
+(9, 'Priya Sharma', 9),
+(10, 'Tanishk Singh', 10);
+
+
+2.10 Order Items Table
+
+
+INSERT INTO Order_items (order_ID, product_ID, quantity) 
+VALUES
+(1, 1, 2),
+(2, 2, 1),
+(3, 3, 3),
+(3, 4, 2),
+(3, 5, 1),
+(4, 6, 1),
+(5, 7, 1),
+(6, 8, 1),
+(7, 9, 2),
+(8, 10, 2);
+
+
+
+
+3. Contribution
+Tanishq Dass(2022533) - Table creation, Data population
+Rohan Devgon(2022414) - Data population
+Mehraz Abedin Raz(2022293) - Documentation
